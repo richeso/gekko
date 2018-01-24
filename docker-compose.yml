@@ -1,11 +1,11 @@
 version: '3'
 services:
   gekko:
-    restart: always
     build: ./
+    container_name: mygekko
     volumes:
-      - ./volumes/gekko/history:/usr/src/app/history
-      - ./config.js:/usr/src/app/config.js
+      - ./sample-config.js:/usr/src/app/config.js
+      - ./backup:/tmp/backup
     links:
       - redis
 #      - postgresql
@@ -22,6 +22,7 @@ services:
 
   redis:
     image: redis:latest
+    container_name: myredis
     volumes:
       - ./volumes/redis:/data
 ## optionally uncomment if you wish to use nginx as a frontend
