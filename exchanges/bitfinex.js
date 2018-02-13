@@ -39,7 +39,7 @@ var retryForever = {
 };
 
 // Probably we need to update these string
-var recoverableErrors = new RegExp(/(SOCKETTIMEDOUT|TIMEDOUT|CONNRESET|CONNREFUSED|NOTFOUND|StatusCodeError: 429|StatusCodeError: 5)/)
+var recoverableErrors = new RegExp(/(SOCKETTIMEDOUT|TIMEDOUT|CONNRESET|CONNREFUSED|NOTFOUND|429|443|5\d\d)/g);
 
 Trader.prototype.processError = function(funcName, error) {
   if (!error) return undefined;
@@ -178,10 +178,10 @@ Trader.prototype.cancelOrder = function(order_id, callback) {
   let process = (err, data) => {
     if (err) return callback(err);
 
-    return callback();
+    return callback(undefined);
   }
 
-  let handler = (cb) => this.bitfinex.order_status(order_id, this.handleResponse('cancelOrder', cb));
+  let handler = (cb) => this.bitfinex.cancel_order(order_id, this.handleResponse('cancelOrder', cb));
   util.retryCustom(retryForever, _.bind(handler, this), _.bind(process, this));
 }
 
@@ -219,6 +219,7 @@ Trader.getCapabilities = function () {
     requires: ['key', 'secret'],
     tid: 'tid',
     providesFullHistory: true,
+    providesHistory: 'date',
     tradable: true
   };
 }
